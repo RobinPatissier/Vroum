@@ -1,13 +1,24 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
-Route::apiResource('trips', TripController::class);
-Route::apiResource('users', UserController::class);
+// Routes pour l'inscription et la connexion
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+
+// Route pour la déconnexion
+Route::middleware('auth:api')->post('logout', [AuthController::class, 'logout']);
+
+// Routes protégées par JWT
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('trips', TripController::class);
+    Route::apiResource('users', UserController::class);
+});
+
 
 /*
 |--------------------------------------------------------------------------
