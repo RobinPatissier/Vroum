@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('role')->default('user'); 
             $table->string('avatar')->nullable(); 
-            $table->foreignId('trip_id')->nullable()->constrained()->onDelete('cascade'); 
+            // $table->foreignId('trip_id')->nullable()->constrained()->onDelete('cascade'); 
             $table->timestamps(); // 
         });
     }
