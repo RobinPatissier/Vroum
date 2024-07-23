@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -116,5 +117,11 @@ class UserController extends Controller
         $user->delete();
         return response()->json(null, 204);
     }
+
+    /**
+     * Récupérer tous les utilisateurs (admin seulement).
+     *
+     * @return \Illuminate\Http\Response
+     */
 }
 
