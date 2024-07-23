@@ -65,20 +65,13 @@ class UserController extends Controller
      * @param \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+   
+     public function show($id)
     {
-        return response()->json($user);
-    }
+        $user = User::findOrFail($id);
+        // $this->authorize('view', $user);
 
-    /**
-     * Afficher le formulaire pour modifier un utilisateur spécifique.
-     *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        // Cette méthode n'est pas nécessaire pour une API RESTful
+        return response()->json($user);
     }
 
     /**

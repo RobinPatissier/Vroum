@@ -1,57 +1,49 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    /**
-     * Enregistrer un nouvel utilisateur.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
+   
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        // Validation des données
+        $validated = $request->validate([
             'lastname' => 'required|string|max:255',
             'firstname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'password' => 'required|string|min:6|confirmed',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $user = new User();
-        $user->lastname = $request->lastname;
-        $user->firstname = $request->firstname;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-
+        // Vérification et stockage de l'avatar
         if ($request->hasFile('avatar')) {
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = $avatarPath;
+            $validated['avatar'] = $avatarPath;
         }
 
-        $user->save();
+        // Création de l'utilisateur
+        $user = User::create([
+            'lastname' => $validated['lastname'],
+            'firstname' => $validated['firstname'],
+            'email' => $validated['email'],'password' => Hash::make($validated['password']),
+            'avatar' => $validated['avatar'] ?? null, 
+        ]);
 
-        return response()->json(['user' => $user], 201);
+        // Génération du token JWT
+        $token = JWTAuth::fromUser($user);
+
+        return response()->json(compact('user', 'token'), 201);
     }
 
-    /**
-     * Connecter un utilisateur et retourner un token JWT.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -64,14 +56,10 @@ class AuthController extends Controller
             return response()->json(['error' => 'Could not create token'], 500);
         }
 
-        return response()->json(['token' => $token]);
+        return response()->json(compact('token'));
     }
 
-    /**
-     * Déconnecter l'utilisateur en supprimant le token JWT.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function logout()
     {
         try {
