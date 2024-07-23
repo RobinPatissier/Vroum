@@ -20,6 +20,10 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('users', UserController::class);
 });
 
+Route::middleware('auth:api')->group(function () {
+    Route::post('trips', [TripController::class, 'store']);
+    // Ajoutez d'autres routes protégées par JWT ici si nécessaire
+});
 
 /*
 |--------------------------------------------------------------------------

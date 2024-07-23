@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Trip;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class TripController extends Controller
 {
@@ -14,19 +16,8 @@ class TripController extends Controller
      */
     public function index()
     {
-        // Récupérer tous les trajets
         $trips = Trip::all();
         return response()->json($trips);
-    }
-
-    /**
-     * Afficher le formulaire pour créer un nouveau trajet.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        // Cette méthode n'est pas nécessaire pour une API RESTful
     }
 
     /**
@@ -37,16 +28,31 @@ class TripController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'starting_point' => 'required|string|max:255',
             'ending_point' => 'required|string|max:255',
             'starting_at' => 'required|date',
-            'available_places' => 'required|integer',
-            'price' => 'required|integer',
-            'user_id' => 'required|exists:users,id',
+            'available_places' => 'required|integer|min:1',
+            'price' => 'required|integer|min:0',
         ]);
 
-        $trip = Trip::create($request->all());
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Obtenir l'utilisateur actuellement authentifié
+        $user = JWTAuth::parseToken()->authenticate();
+
+        // Créer le trajet
+        $trip = Trip::create([
+            'starting_point' => $request->starting_point,
+            'ending_point' => $request->ending_point,
+            'starting_at' => $request->starting_at,
+            'available_places' => $request->available_places,
+            'price' => $request->price,
+            'user_id' => $user->id,
+        ]);
+
         return response()->json($trip, 201);
     }
 
@@ -62,17 +68,6 @@ class TripController extends Controller
     }
 
     /**
-     * Afficher le formulaire pour modifier un trajet spécifique.
-     *
-     * @param \App\Models\Trip $trip
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Trip $trip)
-    {
-        // Cette méthode n'est pas nécessaire pour une API RESTful
-    }
-
-    /**
      * Mettre à jour un trajet spécifique dans la base de données.
      *
      * @param \Illuminate\Http\Request $request
@@ -81,13 +76,17 @@ class TripController extends Controller
      */
     public function update(Request $request, Trip $trip)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'starting_point' => 'required|string|max:255',
             'ending_point' => 'required|string|max:255',
             'starting_at' => 'required|date',
-            'available_places' => 'required|integer',
-            'price' => 'required|integer',
+            'available_places' => 'required|integer|min:1',
+            'price' => 'required|integer|min:0',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
         $trip->update($request->all());
         return response()->json($trip);
