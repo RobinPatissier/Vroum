@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // Routes pour l'inscription et la connexion
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 // Route pour la déconnexion
 Route::middleware('auth:api')->post('logout', [AuthController::class, 'logout']);
