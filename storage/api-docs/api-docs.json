@@ -1,0 +1,549 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Documentation",
+        "description": "Documentation de l'API pour le projet Vroum",
+        "contact": {
+            "email": "support@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/api",
+            "description": "Serveur local"
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Enregistrer un nouvel utilisateur",
+                "description": "Crée un nouvel utilisateur et retourne un token JWT.",
+                "operationId": "8a56853624e025573120a09a4c75d468",
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "description": "Token JWT",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation échouée"
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Connecter un utilisateur",
+                "description": "Connecte un utilisateur et retourne un token JWT.",
+                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "Adresse e-mail de l'utilisateur",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "description": "Mot de passe de l'utilisateur",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Authentification réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "description": "Token JWT",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Identifiants invalides"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Déconnecter un utilisateur",
+                "description": "Déconnecte l'utilisateur en invalidant le token JWT.",
+                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Message de succès",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Échec de la déconnexion"
+                    }
+                }
+            }
+        },
+        "/trips": {
+            "get": {
+                "tags": [
+                    "Trips"
+                ],
+                "summary": "Get a list of trips",
+                "operationId": "10ba3ec4a1798366bf9e858297b8c635",
+                "responses": {
+                    "200": {
+                        "description": "List of trips",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Trip"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Trips"
+                ],
+                "summary": "Create a new trip",
+                "operationId": "47dcf5ea0d5a1f23a28fb51e34ad081f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "starting_point": {
+                                        "type": "string",
+                                        "example": "Paris"
+                                    },
+                                    "ending_point": {
+                                        "type": "string",
+                                        "example": "London"
+                                    },
+                                    "starting_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-08-01T14:00:00Z"
+                                    },
+                                    "available_places": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "price": {
+                                        "type": "integer",
+                                        "example": 50
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Trip created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Trip"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trips/{id}": {
+            "get": {
+                "tags": [
+                    "Trips"
+                ],
+                "summary": "Get a specific trip",
+                "operationId": "7c45de8eac6e2b969d441855f39eb437",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the trip",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Details of a specific trip",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Trip"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Trip not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Trip not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Trips"
+                ],
+                "summary": "Update a specific trip",
+                "operationId": "6135e941d2681d021e4e80660477ea37",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the trip",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "starting_point": {
+                                        "type": "string",
+                                        "example": "Paris"
+                                    },
+                                    "ending_point": {
+                                        "type": "string",
+                                        "example": "Berlin"
+                                    },
+                                    "starting_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-08-02T14:00:00Z"
+                                    },
+                                    "available_places": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "price": {
+                                        "type": "integer",
+                                        "example": 45
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Trip updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Trip"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Trip not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Trip not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Trips"
+                ],
+                "summary": "Delete a specific trip",
+                "operationId": "1fca55452b03229a8d0ae823b0fa5479",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the trip",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Trip deleted successfully"
+                    },
+                    "404": {
+                        "description": "Trip not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Trip not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Trip": {
+                "title": "Trip",
+                "description": "Représentation d'un trajet",
+                "properties": {
+                    "id": {
+                        "description": "Identifiant unique du trajet",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "starting_point": {
+                        "description": "Point de départ du trajet",
+                        "type": "string",
+                        "example": "Paris"
+                    },
+                    "ending_point": {
+                        "description": "Point d'arrivée du trajet",
+                        "type": "string",
+                        "example": "London"
+                    },
+                    "starting_at": {
+                        "description": "Date et heure de départ du trajet",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-08-01T14:00:00Z"
+                    },
+                    "available_places": {
+                        "description": "Nombre de places disponibles pour le trajet",
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "price": {
+                        "description": "Prix du trajet",
+                        "type": "integer",
+                        "example": 50
+                    },
+                    "user_id": {
+                        "description": "Identifiant de l'utilisateur qui a créé le trajet",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "created_at": {
+                        "description": "Date de création du trajet",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-07-24T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Date de la dernière mise à jour du trajet",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-07-24T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "description": "Représentation d'un utilisateur",
+                "properties": {
+                    "id": {
+                        "description": "Identifiant unique de l'utilisateur",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "lastname": {
+                        "description": "Nom de famille de l'utilisateur",
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "firstname": {
+                        "description": "Prénom de l'utilisateur",
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "email": {
+                        "description": "Adresse email de l'utilisateur",
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
+                    },
+                    "password": {
+                        "description": "Mot de passe de l'utilisateur (ne sera pas retourné)",
+                        "type": "string",
+                        "example": "password123"
+                    },
+                    "role": {
+                        "description": "Rôle de l'utilisateur dans le système",
+                        "type": "string",
+                        "example": "user"
+                    },
+                    "avatar": {
+                        "description": "Chemin vers l'avatar de l'utilisateur",
+                        "type": "string",
+                        "example": "avatars/johndoe.jpg"
+                    },
+                    "trip_id": {
+                        "description": "Identifiant du trajet associé à l'utilisateur",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "email_verified_at": {
+                        "description": "Date et heure de la vérification de l'email",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-07-01T12:00:00Z"
+                    },
+                    "created_at": {
+                        "description": "Date et heure de la création de l'utilisateur",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-07-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Date et heure de la dernière mise à jour de l'utilisateur",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-07-01T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Operations for user authentication"
+        },
+        {
+            "name": "Trips",
+            "description": "Trips"
+        }
+    ]
+}
