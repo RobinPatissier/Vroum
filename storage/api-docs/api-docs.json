@@ -10,7 +10,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost/api",
+            "url": "http://localhost:8000/api",
             "description": "Serveur local"
         }
     ],
@@ -23,6 +23,53 @@
                 "summary": "Enregistrer un nouvel utilisateur",
                 "description": "Crée un nouvel utilisateur et retourne un token JWT.",
                 "operationId": "8a56853624e025573120a09a4c75d468",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "lastname",
+                                    "firstname",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "lastname": {
+                                        "description": "Nom de famille de l'utilisateur",
+                                        "type": "string"
+                                    },
+                                    "firstname": {
+                                        "description": "Prénom de l'utilisateur",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "Adresse e-mail de l'utilisateur",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "description": "Mot de passe de l'utilisateur",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Confirmation du mot de passe",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "avatar": {
+                                        "description": "Avatar de l'utilisateur",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Utilisateur créé avec succès",
@@ -44,19 +91,32 @@
                         }
                     },
                     "422": {
-                        "description": "Validation échouée"
+                        "description": "Validation échouée",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Les données de validation sont invalides."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
         },
-        "/api/login": {
+        "/login": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Connecter un utilisateur",
                 "description": "Connecte un utilisateur et retourne un token JWT.",
-                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
+                "operationId": "2dd578ff7aba2721293dac66833b27d1",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -74,7 +134,8 @@
                                     },
                                     "password": {
                                         "description": "Mot de passe de l'utilisateur",
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "password"
                                     }
                                 },
                                 "type": "object"
@@ -100,7 +161,20 @@
                         }
                     },
                     "401": {
-                        "description": "Identifiants invalides"
+                        "description": "Identifiants invalides",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Identifiants invalides."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -121,8 +195,8 @@
                                 "schema": {
                                     "properties": {
                                         "message": {
-                                            "description": "Message de succès",
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "Déconnexion réussie"
                                         }
                                     },
                                     "type": "object"
@@ -131,7 +205,20 @@
                         }
                     },
                     "500": {
-                        "description": "Échec de la déconnexion"
+                        "description": "Échec de la déconnexion",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Échec de la déconnexion, veuillez réessayer."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -778,7 +865,7 @@
     "tags": [
         {
             "name": "Auth",
-            "description": "Operations for user authentication"
+            "description": "Opérations pour l'authentification des utilisateurs"
         },
         {
             "name": "Utilisateurs",

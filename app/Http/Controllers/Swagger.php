@@ -12,7 +12,7 @@ namespace App\Http\Controllers;
  *         )
  *     ),
  *     @OA\Server(
- *         url="http://localhost/api",
+ *         url="http://localhost:8000/api",
  *         description="Serveur local"
  *     ),
  *     @OA\Components(
