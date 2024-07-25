@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 /**
@@ -15,12 +14,18 @@ namespace App\Http\Controllers;
  *     @OA\Server(
  *         url="http://localhost/api",
  *         description="Serveur local"
+ *     ),
+ *     @OA\Components(
+ *         @OA\SecurityScheme(
+ *             securityScheme="bearerAuth",
+ *             type="http",
+ *             scheme="bearer",
+ *             bearerFormat="JWT"
+ *         )
  *     )
  * )
  */
-
-
 class Swagger extends Controller
 {
-
+    // Vos méthodes de contrôleur, si nécessaire
 }

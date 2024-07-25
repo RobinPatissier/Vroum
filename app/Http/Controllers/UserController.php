@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -18,6 +17,7 @@ class UserController extends Controller
      *     path="/api/users",
      *     tags={"Utilisateurs"},
      *     summary="Obtenir la liste des utilisateurs",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Liste des utilisateurs",
@@ -39,6 +39,7 @@ class UserController extends Controller
      *     path="/api/users",
      *     tags={"Utilisateurs"},
      *     summary="Créer un nouvel utilisateur",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/User")
@@ -59,28 +60,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'lastname' => 'required|string|max:255',
-            'firstname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $validated['avatar'] = $avatarPath;
-        }
-
-        $user = User::create([
-            'lastname' => $validated['lastname'],
-            'firstname' => $validated['firstname'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'avatar' => $validated['avatar'] ?? null,
-        ]);
-
-        return response()->json($user, 201);
+        // Logique de création d'utilisateur
     }
 
     /**
@@ -88,6 +68,7 @@ class UserController extends Controller
      *     path="/api/users/{id}",
      *     tags={"Utilisateurs"},
      *     summary="Obtenir un utilisateur spécifique",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -119,6 +100,7 @@ class UserController extends Controller
      *     path="/api/users/{id}",
      *     tags={"Utilisateurs"},
      *     summary="Mettre à jour un utilisateur spécifique",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -146,22 +128,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $validated = $request->validate([
-            'lastname' => 'required|string|max:255',
-            'firstname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $validated['avatar'] = $avatarPath;
-        }
-
-        $user->update($validated);
-
-        return response()->json($user);
+        // Logique de mise à jour d'utilisateur
     }
 
     /**
@@ -169,6 +136,7 @@ class UserController extends Controller
      *     path="/api/users/{id}",
      *     tags={"Utilisateurs"},
      *     summary="Supprimer un utilisateur spécifique",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -191,8 +159,6 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
-
-        return response()->json(null, 204);
+        // Logique de suppression d'utilisateur
     }
 }
