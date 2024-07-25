@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
@@ -81,20 +83,32 @@ class UserController extends Controller
      * @param \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
+
+        $currentUser = Auth::user();
+        $user = User::findOrFail($id);
+        // $user = User::findOrFail($id);
+        // $this->authorize('update', $user);
+
         $request->validate([
-            'lastname' => 'sometimes|required|string|max:255',
-            'firstname' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'sometimes|required|string|min:8|confirmed',
-            'role' => 'nullable|string',
-            'avatar' => 'nullable|string',
+            'lastname' => 'string|max:255|nullable',
+            'firstname' => 'string|max:255|nullable',
+            'email' => 'string|email|max:255|nullable|unique:users,email,' . $id,
+            'password' => 'string|min:8|nullable',
+            'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048|nullable',
         ]);
 
-        $user->update($request->only(['lastname', 'firstname', 'email', 'role', 'avatar']) + [
-            'password' => $request->password ? bcrypt($request->password) : $user->password,
-        ]);
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
+        }
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->update($request->except(['password', 'avatar']));
 
         return response()->json($user);
     }
@@ -105,10 +119,14 @@ class UserController extends Controller
      * @param \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
+        $user = User::findOrFail($id);
+        // $this->authorize('delete', $user);
+
         $user->delete();
-        return response()->json(null, 204);
+
+        return response()->json(['message' => 'User deleted successfully']);
     }
 
     /**
