@@ -497,13 +497,13 @@
                 }
             }
         },
-        "/api/users": {
+        "/users": {
             "get": {
                 "tags": [
                     "Utilisateurs"
                 ],
                 "summary": "Obtenir la liste des utilisateurs",
-                "operationId": "c457726701591d1183b53aa71fc13441",
+                "operationId": "7e2f5799553ec93c9c43e2a58490d447",
                 "responses": {
                     "200": {
                         "description": "Liste des utilisateurs",
@@ -530,7 +530,7 @@
                     "Utilisateurs"
                 ],
                 "summary": "Créer un nouvel utilisateur",
-                "operationId": "592819a0265360b2014512d6dbfaf0e7",
+                "operationId": "a1fce870c566eb5fc0cf3178ec5d2fed",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -576,13 +576,13 @@
                 ]
             }
         },
-        "/api/users/{id}": {
+        "/users/{id}": {
             "get": {
                 "tags": [
                     "Utilisateurs"
                 ],
                 "summary": "Obtenir un utilisateur spécifique",
-                "operationId": "36a33ff774d5cba33c039dec2c3e0287",
+                "operationId": "910a0c7cf580e1c605648d82a4e57f46",
                 "parameters": [
                     {
                         "name": "id",
@@ -633,7 +633,7 @@
                     "Utilisateurs"
                 ],
                 "summary": "Mettre à jour un utilisateur spécifique",
-                "operationId": "b9091397c8b25f12c6adb74be6ce3a5a",
+                "operationId": "ddfe232db1870b82493bf8bd25596d37",
                 "parameters": [
                     {
                         "name": "id",
@@ -694,7 +694,7 @@
                     "Utilisateurs"
                 ],
                 "summary": "Supprimer un utilisateur spécifique",
-                "operationId": "fa56cffde745d3f152f95cbacd936c0b",
+                "operationId": "43dd20becb1f47444e484cbb18ce345c",
                 "parameters": [
                     {
                         "name": "id",
