@@ -28,7 +28,7 @@ Route::middleware('auth:api, isAdmin')->group(function () {
 // Trip management routes
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('trips', TripController::class);
-    Route::get('search', [TripController::class, 'search']);
+    Route::get('trips/search', [TripController::class, 'search']);
 });
 
 Route::apiResource('trips', TripController::class)->middleware('auth:api');
