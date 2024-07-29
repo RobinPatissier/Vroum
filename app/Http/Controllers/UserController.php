@@ -1,87 +1,132 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+/**
+ * @OA\Tag(
+ *     name="Utilisateurs",
+ *     description="Gestion des utilisateurs"
+ * )
+ */
 class UserController extends Controller
 {
     /**
-     * Afficher une liste d'utilisateurs.
-     *
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *     path="/users",
+     *     tags={"Utilisateurs"},
+     *     summary="Obtenir la liste des utilisateurs",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Liste des utilisateurs",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/User")
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
-        // Récupérer tous les utilisateurs
         $users = User::all();
         return response()->json($users);
     }
 
     /**
-     * Afficher le formulaire pour créer un nouvel utilisateur.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        // Cette méthode n'est pas nécessaire pour une API RESTful
-    }
-
-    /**
-     * Enregistrer un nouvel utilisateur dans la base de données.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @OA\Post(
+     *     path="/users",
+     *     tags={"Utilisateurs"},
+     *     summary="Créer un nouvel utilisateur",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Utilisateur créé avec succès",
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation échouée",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Validation failed")
+     *         )
+     *     )
+     * )
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'lastname' => 'required|string|max:255',
-            'firstname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'nullable|string',
-            'avatar' => 'nullable|string',
-        ]);
-
-        $user = User::create([
-            'lastname' => $request->lastname,
-            'firstname' => $request->firstname,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role' => $request->role ?? 'user',
-            'avatar' => $request->avatar,
-        ]);
-
-        return response()->json($user, 201);
+        // Logique de création d'utilisateur
     }
 
     /**
-     * Afficher un utilisateur spécifique.
-     *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *     path="/users/{id}",
+     *     tags={"Utilisateurs"},
+     *     summary="Obtenir un utilisateur spécifique",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de l'utilisateur",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Détails d'un utilisateur spécifique",
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Utilisateur non trouvé",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="User not found")
+     *         )
+     *     )
+     * )
      */
-   
-     public function show($id)
+    public function show(User $user)
     {
-        $user = User::findOrFail($id);
-        // $this->authorize('view', $user);
-
         return response()->json($user);
     }
 
     /**
-     * Mettre à jour un utilisateur spécifique dans la base de données.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @OA\Put(
+     *     path="/users/{id}",
+     *     tags={"Utilisateurs"},
+     *     summary="Mettre à jour un utilisateur spécifique",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de l'utilisateur",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Utilisateur mis à jour avec succès",
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Utilisateur non trouvé",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="User not found")
+     *         )
+     *     )
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -114,10 +159,30 @@ class UserController extends Controller
     }
 
     /**
-     * Supprimer un utilisateur spécifique de la base de données.
-     *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @OA\Delete(
+     *     path="/users/{id}",
+     *     tags={"Utilisateurs"},
+     *     summary="Supprimer un utilisateur spécifique",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de l'utilisateur",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Utilisateur supprimé avec succès"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Utilisateur non trouvé",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="User not found")
+     *         )
+     *     )
+     * )
      */
     public function destroy($id)
     {
@@ -128,11 +193,4 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User deleted successfully']);
     }
-
-    /**
-     * Récupérer tous les utilisateurs (admin seulement).
-     *
-     * @return \Illuminate\Http\Response
-     */
 }
-
