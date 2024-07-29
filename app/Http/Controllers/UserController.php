@@ -2,7 +2,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
  * @OA\Tag(
@@ -126,9 +128,34 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        // Logique de mise à jour d'utilisateur
+
+        $currentUser = Auth::user();
+        $user = User::findOrFail($id);
+        // $user = User::findOrFail($id);
+        // $this->authorize('update', $user);
+
+        $request->validate([
+            'lastname' => 'string|max:255|nullable',
+            'firstname' => 'string|max:255|nullable',
+            'email' => 'string|email|max:255|nullable|unique:users,email,' . $id,
+            'password' => 'string|min:8|nullable',
+            'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048|nullable',
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
+        }
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->update($request->except(['password', 'avatar']));
+
+        return response()->json($user);
     }
 
     /**
@@ -157,8 +184,13 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        // Logique de suppression d'utilisateur
+        $user = User::findOrFail($id);
+        // $this->authorize('delete', $user);
+
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully']);
     }
 }

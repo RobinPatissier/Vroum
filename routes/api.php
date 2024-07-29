@@ -17,25 +17,17 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 // User management routes
-Route::middleware('isAdmin')->group(function () {
+Route::middleware('auth:api, isAdmin')->group(function () {
     Route::get('users', [UserController::class, 'index']);
     Route::get('users/{id}', [UserController::class, 'show']);
     Route::put('users/{id}', [UserController::class, 'update']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 });
 
-
-Route::middleware('auth:api',)->group(function () {
-    Route::get('users', [UserController::class, 'index']);
-    Route::get('users/{id}', [UserController::class, 'show']);
-    // Route::put('users/{id}', [UserController::class, 'update']);
-    // Route::delete('users/{id}', [UserController::class, 'destroy']);
-});
-
 // Trip management routes
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('trips', TripController::class);
-    Route::get('search', [TripController::class, 'search']);
+    Route::get('trips/search', [TripController::class, 'search']);
 });
 
 Route::apiResource('trips', TripController::class)->middleware('auth:api');

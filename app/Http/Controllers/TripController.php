@@ -27,8 +27,8 @@ class TripController extends Controller
      */
     public function index()
     {
-        $trips = Trip::all();
-        return response()->json($trips);
+        // Vérifier si la date est au format 'Y-m-d'
+        return \DateTime::createFromFormat('Y-m-d', $date) !== false;
     }
 
     /**
@@ -62,32 +62,40 @@ class TripController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'starting_point' => 'required|string|max:255',
-            'ending_point' => 'required|string|max:255',
-            'starting_at' => 'required|date',
-            'available_places' => 'required|integer|min:1',
-            'price' => 'required|integer|min:0',
+        // Validation des champs, les champs sont optionnels
+        $request->validate([
+            'starting_point' => 'nullable|string|max:255',
+            'ending_point' => 'nullable|string|max:255',
+            'starting_at' => 'nullable|date',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+        // Récupération des valeurs des inputs
+        $startingPoint = $request->input('starting_point');
+        $endingPoint = $request->input('ending_point');
+        $startingAt = $request->input('starting_at');
+
+        // Création de la requête de base
+        $query = Trip::query();
+
+        // Appliquer les filtres si les valeurs sont fournies
+        if ($startingPoint) {
+            $query->where('starting_point', 'like', "%$startingPoint%");
         }
 
-        // Obtenir l'utilisateur actuellement authentifié
-        $user = JWTAuth::parseToken()->authenticate();
+        if ($endingPoint) {
+            $query->where('ending_point', 'like', "%$endingPoint%");
+        }
 
-        // Créer le trajet
-        $trip = Trip::create([
-            'starting_point' => $request->starting_point,
-            'ending_point' => $request->ending_point,
-            'starting_at' => $request->starting_at,
-            'available_places' => $request->available_places,
-            'price' => $request->price,
-            'user_id' => $user->id,
-        ]);
+        if ($startingAt) {
+            if ($this->isValidDate($startingAt)) {
+                $query->whereDate('starting_at', $startingAt);
+            } else {
+                return response()->json(['error' => 'Format de date invalide'], 400);
+            }
+        }
 
-        return response()->json($trip, 201);
+        // Exécution de la requête et obtention des résultats
+        $trips = $query->get();
     }
 
     /**
@@ -212,4 +220,5 @@ class TripController extends Controller
         $trip->delete();
         return response()->json(null, 204);
     }
+
 }
