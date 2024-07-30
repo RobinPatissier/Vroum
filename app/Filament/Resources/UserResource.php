@@ -23,7 +23,7 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                //
+                T
             ]);
     }
 
@@ -32,8 +32,11 @@ class UserResource extends Resource
         return $table
             ->columns([
 
-                Tables\Columns\TextColumn::make('lastname'),
+            Tables\Columns\TextColumn::make('lastname'),
+            Tables\Columns\TextColumn::make('firstname'),
+            Tables\Columns\TextColumn::make('role'),
             Tables\Columns\TextColumn::make('email'),
+            Tables\Columns\ImageColumn::make('avatar')
 
             ])
             ->filters([
