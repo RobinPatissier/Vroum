@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -62,7 +64,28 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // Logique de création d'utilisateur
+        $request->validate([
+            'lastname' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048|nullable',
+        ]);
+
+        $user = new User();
+        $user->lastname = $request->lastname;
+        $user->firstname = $request->firstname;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
+        }
+
+        $user->save();
+
+        return response()->json($user, 201);
     }
 
     /**
@@ -130,11 +153,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-        $currentUser = Auth::user();
         $user = User::findOrFail($id);
-        // $user = User::findOrFail($id);
-        // $this->authorize('update', $user);
 
         $request->validate([
             'lastname' => 'string|max:255|nullable',
@@ -184,13 +203,11 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function destroy($id)
+    public function destroy($user)
     {
-        $user = User::findOrFail($id);
-        // $this->authorize('delete', $user);
-
+        $user = User::findOrFail($user);
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully']);
+        return response()->json(['message' => 'User deleted successfully'], 204);
     }
 }
