@@ -45,6 +45,7 @@ class TripResource extends Resource
             Tables\Columns\TextColumn::make('user_id'),
             ])
             ->filters([
+                
                 //
             ])
             ->actions([
