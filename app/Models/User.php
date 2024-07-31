@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Filament\Models\Contracts\HasName;
 
 /**
  * @OA\Schema(
@@ -80,7 +81,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * )
  */
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements HasName, JWTSubject
 {
     use HasFactory, Notifiable;
 
@@ -121,5 +122,9 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+    public function getFilamentName(): string
+    {
+        return $this->getAttributeValue('firstname');
     }
 }
