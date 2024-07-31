@@ -45,14 +45,10 @@ Route::middleware('auth:api',)->group(function () {
 });
 
 // Trip management routes
-Route::middleware('auth:api')->group(function () {
+
     Route::get('trips', [TripController::class, 'index']);
     Route::post('trips', [TripController::class, 'store']);
     Route::get('trips/{trip}', [TripController::class, 'show']);
     Route::put('trips/{trip}', [TripController::class, 'update']);
     Route::delete('trips/{trip}', [TripController::class, 'destroy']);
-    Route::get('search', [TripController::class, 'search']);
-});
-
-
-Route::apiResource('trips', TripController::class)->middleware('auth:api');
+  
