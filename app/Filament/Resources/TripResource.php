@@ -22,16 +22,26 @@ class TripResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                //
-            ]);
+        ->schema([
+            Forms\Components\TextInput::make('startingPoint')->required(),
+            Forms\Components\TextInput::make('endingPoint')->required(),
+            Forms\Components\DateTimePicker::make('starting_At')->required(),
+            Forms\Components\TextInput::make('available_places')->integer()->required(),
+            Forms\Components\TextInput::make('price')->integer()->required(),
+            Forms\Components\Select::make('user_id')->options(User::all()->pluck('lastname', 'id'))
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('starting_point'),
+            Tables\Columns\TextColumn::make('endingPoint'),
+            Tables\Columns\TextColumn::make('starting_At'),
+            Tables\Columns\TextColumn::make('available_places'),
+            Tables\Columns\TextColumn::make('price'),
+            Tables\Columns\TextColumn::make('user_id'),
             ])
             ->filters([
                 //

@@ -33,6 +33,7 @@ class UserResource extends Resource
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create')
                             ->maxLength(255),
+                Forms\Components\FileUpload::make('avatar')->default('default.png'),
             ]);
     }
 
