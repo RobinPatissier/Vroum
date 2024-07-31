@@ -81,7 +81,7 @@ use Filament\Models\Contracts\HasName;
  * )
  */
 
-class User extends Authenticatable implements HasName
+class User extends Authenticatable implements HasName, JWTSubject
 {
     use HasFactory, Notifiable;
 

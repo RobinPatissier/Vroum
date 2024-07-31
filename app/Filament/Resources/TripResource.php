@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TripResource\Pages;
 use App\Filament\Resources\TripResource\RelationManagers;
 use App\Models\Trip;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,9 +24,9 @@ class TripResource extends Resource
     {
         return $form
         ->schema([
-            Forms\Components\TextInput::make('startingPoint')->required(),
-            Forms\Components\TextInput::make('endingPoint')->required(),
-            Forms\Components\DateTimePicker::make('starting_At')->required(),
+            Forms\Components\TextInput::make('starting_point')->required(),
+            Forms\Components\TextInput::make('ending_point')->required(),
+            Forms\Components\DateTimePicker::make('starting_at')->required(),
             Forms\Components\TextInput::make('available_places')->integer()->required(),
             Forms\Components\TextInput::make('price')->integer()->required(),
             Forms\Components\Select::make('user_id')->options(User::all()->pluck('lastname', 'id'))
@@ -37,8 +38,8 @@ class TripResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('starting_point'),
-            Tables\Columns\TextColumn::make('endingPoint'),
-            Tables\Columns\TextColumn::make('starting_At'),
+            Tables\Columns\TextColumn::make('ending_point'),
+            Tables\Columns\TextColumn::make('starting_at'),
             Tables\Columns\TextColumn::make('available_places'),
             Tables\Columns\TextColumn::make('price'),
             Tables\Columns\TextColumn::make('user_id'),
