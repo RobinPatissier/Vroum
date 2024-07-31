@@ -170,6 +170,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
+        // App\Providers\TelescopeServiceProvider::class,
+        Laravel\Telescope\TelescopeServiceProvider::class,
+        App\Providers\AppServiceProvider::class,
     ])->toArray(),
 
     /*
