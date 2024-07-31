@@ -51,4 +51,7 @@ Route::middleware('auth:api',)->group(function () {
     Route::get('trips/{trip}', [TripController::class, 'show']);
     Route::put('trips/{trip}', [TripController::class, 'update']);
     Route::delete('trips/{trip}', [TripController::class, 'destroy']);
-  
+    
+    // Reservation management routes
+    Route::post('reservation', [UserController::class, 'reservation']);
+    Route::post('cancel', [UserController::class, 'cancel']);

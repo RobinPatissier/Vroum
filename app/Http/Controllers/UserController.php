@@ -210,4 +210,92 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User deleted successfully'], 204);
     }
+
+
+    /**
+     * @OA\Post(
+     *     path="/api/reservation",
+     *     summary="Reserve a trip",
+     *     tags={"Reservations"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="trip_id", type="integer", example=1, description="ID of the trip to reserve")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Trip reserved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Trip reserved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="No available places for this trip")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Unauthorized")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="You have already reserved this trip")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Trip not found")
+     *         )
+     *     )
+     * )
+     */
+
+
+     public function reservation(Request $request)
+{
+    $user = Auth::user();
+   
+
+    $validatedData = $request->validate([
+        'trip_id' => 'required|exists:trips,id',
+    ]);
+
+    $tripId = $validatedData['trip_id'];
+
+    $trips = json_decode($user->trip_id, true) ?? [];
+
+    if (in_array($tripId, $trips)) {
+        return response()->json(['error' => 'You have already reserved this trip'], 400);
+    }
+
+    $trip = Trip::find($tripId);
+    if ($trip->available_places <= 0) {
+        return response()->json(['error' => 'No available places for this trip'], 400);
+    }
+
+    $trips[] = $tripId;
+    $user->trip_id = json_encode($trips);
+    $user->save();
+
+    $trip->decrement('available_places');
+
+    Mail::to($user->email)->send(new ReservationConfirmed($trip));
+
+    return response()->json(['message' => 'Trip reserved successfully'], 201);
+}
+
+     
+
 }
